@@ -1,4 +1,4 @@
--- Se crean tablas con la informacion a analizar 
+--CREACION DE TABLAS Y CARGA DE INFORMACION
 
 -- Tabla 'Categorias'
 CREATE TABLE IF NOT EXISTS Categorias(
@@ -129,5 +129,94 @@ SET Fecha = CASE WHEN @Fecha = '' THEN NULL ELSE STR_TO_DATE(@Fecha, '%d/%m/%Y')
 ;
 SELECT *
 FROM ventas;
+
+-- EXPLORACION DE DATOS
+
+-- Cantidad de clientes por region
+SELECT
+    Region,
+    count(ID_Cliente) AS Cantidad_clientes
+FROM clientes
+GROUP BY Region
+ORDER BY Cantidad_clientes;
+
+-- Totales de ventas por mes
+SELECT DATE_FORMAT(Fecha, '%Y-%m') AS Periodo,
+    SUM(Cantidad * p.Precio_Unitario) AS Ventas_totales
+FROM Ventas AS v
+JOIN Producto AS p ON v.ID_Producto = p.ID_Producto
+GROUP BY Periodo
+ORDER BY Periodo;
+
+-- Top 3 meses donde se realizaron mayores ventas
+SELECT DATE_FORMAT(Fecha, '%Y-%m') AS Periodo,
+    SUM(Cantidad * p.Precio_Unitario) AS Ventas_totales
+FROM Ventas AS v
+JOIN Producto AS p ON v.ID_Producto = p.ID_Producto
+GROUP BY Periodo
+ORDER BY Ventas_totales DESC
+LIMIT 3;
+
+-- Ventas por metodo de pago 
+SELECT 
+    mp.metodo,
+    COUNT(v.ID_Venta) AS Cantidad_ventas, 
+    SUM(v.Cantidad * p.Precio_Unitario) AS Ventas_totales   
+FROM Ventas AS v
+JOIN Producto AS p ON v.ID_Producto = p.ID_Producto
+JOIN metodo_pago AS mp ON mp.ID_Metodo = v.Metodo_Pago
+GROUP BY mp.Metodo
+ORDER BY Ventas_totales DESC;
+
+-- Cantidad de productos por categoría y stock disponible
+SELECT
+    c.Categoria,
+    count(p.ID_Producto) AS cantidad_productos,
+    sum(p.Stock) AS Stock_total
+FROM producto AS p
+JOIN Categorias AS c ON p.ID_Categoria = c.ID_Categoria
+GROUP BY c.Categoria
+ORDER BY Stock_total;
+
+-- METRICAS CLAVES, INFORMACION RELEVANTE PARA LA TOMA DE DECISIONES
+
+-- Categorias mas vendidas
+SELECT
+    c.Categoria,
+    SUM(v.Cantidad * p.Precio_Unitario) AS Ventas_totales
+FROM ventas AS v
+JOIN producto AS p ON v.ID_Producto = p.ID_Producto
+JOIN Categorias AS c ON p.ID_Categoria = c.ID_Categoria
+GROUP BY c.Categoria
+ORDER BY Ventas_totales DESC;
+
+-- Productos mas vendidos
+SELECT
+    p.Nombre_producto,
+    SUM(v.Cantidad) AS cantidades,
+    SUM(v.Cantidad * p.Precio_Unitario) AS Ventas_totales
+FROM Ventas AS v
+JOIN Producto AS p ON v.ID_Producto = p.ID_Producto
+GROUP BY p.ID_Producto
+ORDER BY cantidades DESC
+LIMIT 10;
+
+-- Clientes que mas compras
+SELECT
+    cl.Nombre,
+    cl.Apellido,
+    count(v.ID_Venta) AS unidades_vendidas,
+    SUM(v.Cantidad * p.Precio_Unitario) AS Ventas_totales
+FROM ventas AS v
+JOIN clientes AS cl ON v.ID_Cliente = cl.ID_Cliente
+JOIN producto AS p  ON v.ID_Producto = p.ID_Producto
+GROUP BY cl.Nombre, cl.Apellido
+ORDER BY Ventas_totales DESC
+LIMIT 10;
+
+
+
+
+
 
 
