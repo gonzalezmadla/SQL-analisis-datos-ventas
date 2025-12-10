@@ -135,7 +135,7 @@ FROM ventas;
 -- Cantidad de clientes por region
 SELECT
     Region,
-    count(ID_Cliente) AS Cantidad_clientes
+    COUNT(ID_Cliente) AS Cantidad_clientes
 FROM clientes
 GROUP BY Region
 ORDER BY Cantidad_clientes;
@@ -171,8 +171,8 @@ ORDER BY Ventas_totales DESC;
 -- Cantidad de productos por categoría y stock disponible
 SELECT
     c.Categoria,
-    count(p.ID_Producto) AS cantidad_productos,
-    sum(p.Stock) AS Stock_total
+    COUNT(p.ID_Producto) AS cantidad_productos,
+    SUM(p.Stock) AS Stock_total
 FROM producto AS p
 JOIN Categorias AS c ON p.ID_Categoria = c.ID_Categoria
 GROUP BY c.Categoria
@@ -205,7 +205,7 @@ LIMIT 10;
 SELECT
     cl.Nombre,
     cl.Apellido,
-    count(v.ID_Venta) AS unidades_vendidas,
+    COUNT(v.ID_Venta) AS unidades_vendidas,
     SUM(v.Cantidad * p.Precio_Unitario) AS Ventas_totales
 FROM ventas AS v
 JOIN clientes AS cl ON v.ID_Cliente = cl.ID_Cliente
@@ -214,9 +214,67 @@ GROUP BY cl.Nombre, cl.Apellido
 ORDER BY Ventas_totales DESC
 LIMIT 10;
 
+-- Stock por producto vs ventas realizadas (para detectar falta de stock)
+SELECT 
+    p.Nombre_producto,
+    p.Stock,
+    SUM(v.Cantidad) AS Vendido,
+    p.Stock - SUM(v.Cantidad) AS Stock_restante
+FROM Producto AS p
+LEFT JOIN Ventas AS v ON p.ID_Producto = v.ID_Producto
+GROUP BY p.ID_Producto
+ORDER BY Stock_restante
+;
 
 
+-- CONTROLES PARA DETECCION DE POSIBLES PROBLEMAS
 
+-- Productos bajo stock 
+SELECT
+    Nombre_producto,
+    Stock
+FROM producto
+WHERE Stock < 10
+ORDER BY Stock DESC;
 
+-- Deteccion de ventas duplicadas
+SELECT 
+    ID_Venta, 
+    COUNT(*) AS veces_repetido
+FROM Ventas
+GROUP BY ID_Venta
+HAVING COUNT(*) > 1;
 
+-- Ventas con precios incorrectos
+SELECT
+    v.ID_Venta,
+    p.Nombre_producto,
+    p.Precio_Unitario
+FROM ventas AS v
+JOIN producto AS p ON v.ID_Producto = p.ID_Producto
+WHERE p.Precio_Unitario <=0;
+
+-- Productos sin categoria asignada
+SELECT
+    P.*,
+    c.Categoria
+FROM producto AS p
+JOIN categorias AS c ON p.ID_Categoria = c.ID_Categoria
+WHERE c.Categoria IS NULL;
+
+-- Metodos de pago no validos
+SELECT DISTINCT
+    Metodo_Pago
+FROM ventas
+WHERE Metodo_Pago NOT IN (SELECT ID_Metodo FROM metodo_pago);
+
+-- Productos vendidos sin stock
+SELECT
+    v.ID_Venta,
+    p.Nombre_producto,
+    v.Cantidad,
+    p.stock
+FROM ventas AS v
+JOIN producto AS p ON v.ID_Producto = p.ID_Producto
+WHERE v.Cantidad > P.Stock;
 

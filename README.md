@@ -43,18 +43,71 @@ Con relaciones que garantizan integridad y trazabilidad:
 - Ventas.Metodo_Pago → Metodo_pago.ID_Metodo
 ```
 
- # Detalle de tareas realizadas
-Se desarrolló un flujo completo de análisis de datos de ventas utilizando SQL. Entre las principales tareas realizadas se incluyen:
+## Desarrollo y análisis del proyecto
 
-1. Construcción de una base de datos relacional a partir de archivos CSV crudos.
+Este proyecto abarcó un flujo completo de trabajo en SQL, desde el modelado inicial hasta la generación de insights finales para el negocio. Las principales etapas fueron:
 
-2. Diseño de tablas y relaciones (claves primarias, claves foráneas e integridad referencial).
+1. Modelado y construcción de la base de datos
 
-3. Implementación de un proceso ETL: carga de datos, limpieza, normalización y validación.
+    - Diseño del modelo relacional a partir de archivos CSV.
 
-4. Análisis exploratorio de los datos para descubrir patrones y comportamientos relevantes.
+    - Creación de tablas normalizadas (Clientes, Producto, Categorías, Método de pago, Ventas).
 
-5. Cálculo de métricas y KPIs clave para retail, como revenue, ticket promedio y top productos vendidos.
+    - Implementación de claves primarias y foráneas para asegurar integridad referencial.
 
-6. Documentación detallada de todo el flujo de trabajo para que sirva como ejemplo profesional de análisis de datos.
+    - Incorporación de la columna ID_Categoria en Producto y posterior asignación mediante JOIN con Categorías.
+
+2. Proceso ETL (carga, limpieza y validación)
+
+    - Carga de datos con LOAD DATA INFILE desde archivos CSV.
+
+    - Conversión y validación de fechas.
+
+    - Eliminación automática de registros duplicados mediante IGNORE.
+
+    - Normalización de categorías, productos y métodos de pago.
+
+    - Verificación de consistencia entre claves foráneas y datos importados.
+
+3. Análisis exploratorio de los datos
+
+    Se desarrollaron consultas de exploración para comprender el comportamiento del dataset:
+
+    - Clientes por región.
+
+    - Stock total y cantidad de productos por categoría.
+
+    - Distribución de ventas por método de pago.
+
+    - Evolución mensual de ventas.
+
+4. Métricas clave del negocio
+
+    Se calcularon indicadores fundamentales para retail:
+
+    - Top categorías más vendidas.
+
+    - Top productos por cantidad y revenue.
+
+    - Clientes con mayor volumen de compras.
+
+    - Meses con mayor facturación.
+
+    - Relación stock vs ventas para anticipar quiebres de inventario.
+
+5. Controles de calidad y detección de incidencias
+
+    Con el objetivo de simular escenarios reales del negocio, se agregaron consultas para detectar problemas frecuentes en bases de datos operativas:
+
+    - Productos con bajo stock.
+
+    - Ventas duplicadas.
+
+    - Precios incorrectos o valores nulos.
+
+    - Métodos de pago no válidos.
+
+    - Productos sin categoría asignada.
+
+    - Ventas realizadas con stock insuficiente.
 
