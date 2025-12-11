@@ -148,15 +148,6 @@ JOIN Producto AS p ON v.ID_Producto = p.ID_Producto
 GROUP BY Periodo
 ORDER BY Periodo;
 
--- Top 3 meses donde se realizaron mayores ventas
-SELECT DATE_FORMAT(Fecha, '%Y-%m') AS Periodo,
-    SUM(Cantidad * p.Precio_Unitario) AS Ventas_totales
-FROM Ventas AS v
-JOIN Producto AS p ON v.ID_Producto = p.ID_Producto
-GROUP BY Periodo
-ORDER BY Ventas_totales DESC
-LIMIT 3;
-
 -- Ventas por metodo de pago 
 SELECT 
     mp.metodo,
@@ -213,6 +204,15 @@ JOIN producto AS p  ON v.ID_Producto = p.ID_Producto
 GROUP BY cl.Nombre, cl.Apellido
 ORDER BY Ventas_totales DESC
 LIMIT 10;
+
+-- Top 3 meses donde se realizaron mayores ventas
+SELECT DATE_FORMAT(Fecha, '%Y-%m') AS Periodo,
+    SUM(Cantidad * p.Precio_Unitario) AS Ventas_totales
+FROM Ventas AS v
+JOIN Producto AS p ON v.ID_Producto = p.ID_Producto
+GROUP BY Periodo
+ORDER BY Ventas_totales DESC
+LIMIT 3;
 
 -- Stock por producto vs ventas realizadas (para detectar falta de stock)
 SELECT 
@@ -277,4 +277,5 @@ SELECT
 FROM ventas AS v
 JOIN producto AS p ON v.ID_Producto = p.ID_Producto
 WHERE v.Cantidad > P.Stock;
+
 
